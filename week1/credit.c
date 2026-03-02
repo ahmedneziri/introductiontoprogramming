@@ -30,56 +30,68 @@
 
 int main(void)
 {
-    // TODO: Prompt user for a credit card number using get_long()
-    //       Hint: card numbers can exceed int range — use `long`
+    // Prompt user for credit card number
+    long card_number = get_long("Number: ");
 
-
-    // -----------------------------------------------------------------------
-    // STEP 1: Count the number of digits
-    // -----------------------------------------------------------------------
+    // STEP 1: Count length and extract digits for Luhn's
     int length = 0;
+    long temp_card = card_number;
+    int sum_doubled = 0;
+    int sum_rest = 0;
 
-    // TODO: Use a loop to count digits.
-    //       Hint: make a copy of the number, divide by 10 each iteration,
-    //       stop when the copy reaches 0.
+    while (temp_card > 0)
+    {
+        int last_digit = temp_card % 10;
 
+        // Luhn's Algorithm logic based on position (0 is last, 1 is second-to-last)
+        if (length % 2 == 1) // ODD position (1st, 3rd, 5th from right)
+        {
+            int doubled = last_digit * 2;
+            // If product >= 10, add digits (e.g., 12 -> 1 + 2 = 3)
+            sum_doubled += (doubled / 10) + (doubled % 10);
+        }
+        else // EVEN position (0th, 2nd, 4th from right)
+        {
+            sum_rest += last_digit;
+        }
 
-    // -----------------------------------------------------------------------
-    // STEP 2: Apply Luhn's Algorithm
-    // -----------------------------------------------------------------------
-    int sum_doubled = 0;  // sum of doubled every-other digits
-    int sum_rest    = 0;  // sum of the remaining digits
+        temp_card /= 10;
+        length++;
+    }
 
-    // TODO: Loop through each digit of the card number.
-    //       Use modulo 10 to extract the last digit, then divide by 10.
-    //       Use a counter (i) to track position: i=0 is the LAST digit,
-    //       i=1 is second-to-last (this is the FIRST one to double), etc.
-    //
-    //       If position i is ODD  → double the digit, handle >= 10 case,
-    //                                add to sum_doubled
-    //       If position i is EVEN → add directly to sum_rest
+    // STEP 2: Check validity via Luhn's Sum
+    if ((sum_doubled + sum_rest) % 10 != 0)
+    {
+        printf("INVALID\n");
+        return 0;
+    }
 
+    // STEP 3: Identify card type using first digits
+    long first_digits = card_number;
+    while (first_digits >= 100)
+    {
+        first_digits /= 10;
+    }
 
-    // -----------------------------------------------------------------------
-    // STEP 3: Check validity
-    // -----------------------------------------------------------------------
-    // TODO: If (sum_doubled + sum_rest) % 10 != 0, print INVALID and return.
+    int first_digit = first_digits / 10;
 
-
-    // -----------------------------------------------------------------------
-    // STEP 4: Identify card type
-    // -----------------------------------------------------------------------
-    // TODO: Extract the first two digits of the card number.
-    //       Hint: keep dividing by 10 until only 2 digits remain.
-
-
-    // TODO: Use if/else if to check length + starting digits:
-    //
-    //   AMEX:       length == 15 && (first2 == 34 || first2 == 37)
-    //   MASTERCARD: length == 16 && first2 >= 51 && first2 <= 55
-    //   VISA:       (length == 13 || length == 16) && first digit == 4
-    //               Hint for VISA: first2 / 10 == 4
-    //   Otherwise:  INVALID
-
-
+    // Check AMEX: 15 digits, starts with 34 or 37
+    if (length == 15 && (first_digits == 34 || first_digits == 37))
+    {
+        printf("AMEX\n");
+    }
+    // Check MASTERCARD: 16 digits, starts with 51-55
+    else if (length == 16 && (first_digits >= 51 && first_digits <= 55))
+    {
+        printf("MASTERCARD\n");
+    }
+    // Check VISA: 13 or 16 digits, starts with 4
+    else if ((length == 13 || length == 16) && first_digit == 4)
+    {
+        printf("VISA\n");
+    }
+    else
+    {
+        printf("INVALID\n");
+    }
 }

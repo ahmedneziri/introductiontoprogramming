@@ -18,9 +18,15 @@
 
 int main(void)
 {
-    // TODO: Prompt the user for their name using get_string()
+#include <cs50.h>
+#include <stdio.h>
 
+int main(void)
+{
 
-    // TODO: Print "hello, " followed by their name using printf()
+    string name = get_string("What is your name? ");
+
+    printf("hello, %s\n", name);
+}
 
 }
